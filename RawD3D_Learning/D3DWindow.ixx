@@ -1,7 +1,8 @@
 module;
 
-#pragma once;
+#pragma once
 #include <Windows.h>
+#include <dwmapi.h>
 #include <string>
 
 export module D3DWindow;
@@ -78,6 +79,24 @@ public:
 			MessageBox(nullptr, L"Window Creation Failed!", L"RawD3D_Learning", 0);
 			return HRESULT_FROM_WIN32(GetLastError());
 		}
+		
+		auto SetDWMAttribute = [] (HWND& WindowHandle, const DWMWINDOWATTRIBUTE Attribute, const auto Value)
+		{
+			DwmSetWindowAttribute(WindowHandle, Attribute, &Value, sizeof(Value));
+		};
+
+		const BOOL bEnable = true;		
+		SetDWMAttribute(m_WindowHandle, DWMWA_USE_HOSTBACKDROPBRUSH, bEnable);
+		SetDWMAttribute(m_WindowHandle, DWMWA_USE_IMMERSIVE_DARK_MODE, bEnable);
+
+		DWM_BLURBEHIND BlurProperties 
+		{
+			.dwFlags = DWM_BB_ENABLE,
+			.fEnable = true,
+			.hRgnBlur = nullptr,
+			.fTransitionOnMaximized = true
+		};
+		DwmEnableBlurBehindWindow(m_WindowHandle, &BlurProperties);
 
 		ShowWindow(m_WindowHandle, ShowCommand);
 		UpdateWindow(m_WindowHandle);

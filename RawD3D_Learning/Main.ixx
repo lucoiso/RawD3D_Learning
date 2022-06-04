@@ -1,6 +1,11 @@
-import D3DWindow;
+module;
 
+#pragma once
 #include <Windows.h>
+
+export module Main;
+
+import D3DWindow;
 
 int WINAPI WinMain(const HINSTANCE hInstance, HINSTANCE hPrevInstance, const LPSTR lpCmdLine, const int nShowCmd)
 {

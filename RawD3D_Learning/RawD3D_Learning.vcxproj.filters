@@ -18,10 +18,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="D3DWindow.ixx">
+      <Filter>Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.ixx">
       <Filter>Modules</Filter>
     </ClCompile>
   </ItemGroup>
