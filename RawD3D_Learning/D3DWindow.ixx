@@ -99,7 +99,7 @@ public:
 		DWM_BLURBEHIND BlurProperties
 		{
 			.dwFlags = DWM_BB_ENABLE,
-			.fEnable = true,
+			.fEnable = false,
 			.hRgnBlur = nullptr,
 			.fTransitionOnMaximized = true
 		};
