@@ -9,11 +9,10 @@ module;
 
 export module D3DWindow;
 
-import BaseControl;
+import D3DControl;
 import D3DButton;
 
-// TO DO: Enhance controls management
-std::map<int, std::unique_ptr<BaseControl>> Controls;
+static std::map<int, std::unique_ptr<D3DControl>> Controls;
 
 export class D3DWindow
 {
@@ -106,8 +105,13 @@ public:
 		};
 		DwmEnableBlurBehindWindow(m_WindowHandle, &BlurProperties);
 
-		// TO DO: Enhance controls management
-		Controls.insert(std::pair<int, std::unique_ptr<BaseControl>>(1, new D3DButton(m_WindowHandle, 1, L"Testing Button", 5, 5, 128, 32)));
+		if (auto NewButton = CreateNewControl<D3DButton>(5, 5, 128, 32, L"Testing Button"))
+		{
+			NewButton->BindOnClicked([](HWND WindowHandle)
+				{
+					MessageBox(nullptr, L"Button Clicked!", L"RawD3D_Learning", 0);
+				});
+		}
 
 		ShowWindow(m_WindowHandle, ShowCommand);
 		UpdateWindow(m_WindowHandle);
@@ -124,6 +128,15 @@ public:
 		}
 
 		return static_cast<HRESULT>(_Message.wParam);
+	}
+
+	template<class ControlTy>
+	ControlTy* CreateNewControl(const int PosX, const int PosY, const int Width, const int Height, const std::wstring ControlText)
+	{
+		auto _NewControl = new ControlTy(m_WindowHandle, 1, ControlText.c_str(), PosX, PosY, Width, Height);
+		Controls.insert(std::pair<int, std::unique_ptr<D3DControl>>(1, _NewControl));
+
+		return _NewControl;
 	}
 
 	static LRESULT WindowProcessing(HWND WindowHandle, UINT Message, WPARAM Parameter, LPARAM LongParameter)

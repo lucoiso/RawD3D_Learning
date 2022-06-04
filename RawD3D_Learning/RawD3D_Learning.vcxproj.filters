@@ -27,7 +27,7 @@
     <ClCompile Include="D3DButton.ixx">
       <Filter>Modules</Filter>
     </ClCompile>
-    <ClCompile Include="BaseControl.ixx">
+    <ClCompile Include="D3DControl.ixx">
       <Filter>Modules</Filter>
     </ClCompile>
   </ItemGroup>

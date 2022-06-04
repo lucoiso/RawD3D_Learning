@@ -139,7 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BaseControl.ixx" />
+    <ClCompile Include="D3DControl.ixx" />
     <ClCompile Include="D3DButton.ixx" />
     <ClCompile Include="D3DWindow.ixx" />
     <ClCompile Include="Main.ixx" />
