@@ -3,6 +3,7 @@ module;
 #pragma once
 #include <Windows.h>
 #include <dwmapi.h>
+#include <type_traits>
 
 export module D3DWindow;
 
@@ -86,7 +87,8 @@ public:
 			return HRESULT_FROM_WIN32(GetLastError());
 		}
 
-		auto SetDWMAttribute = [](HWND& WindowHandle, const DWMWINDOWATTRIBUTE Attribute, const auto Value)
+		const auto SetDWMAttribute =
+			[](HWND& WindowHandle, const DWMWINDOWATTRIBUTE Attribute, const auto Value)
 		{
 			DwmSetWindowAttribute(WindowHandle, Attribute, &Value, sizeof(Value));
 		};
@@ -121,10 +123,11 @@ public:
 	}
 
 	template<class ControlTy>
+		requires std::is_base_of_v<D3DControl, ControlTy>
 	ControlTy* CreateNewControl(const int PosX, const int PosY, const int Width, const int Height, const std::wstring ControlText)
 	{
 		auto _NewControl = new ControlTy(m_WindowHandle, 1, ControlText.c_str(), PosX, PosY, Width, Height);
-		Controls.insert(std::pair<int, std::unique_ptr<D3DControl>>(1, _NewControl));
+		Controls.insert(std::make_pair(1, _NewControl));
 
 		return _NewControl;
 	}
