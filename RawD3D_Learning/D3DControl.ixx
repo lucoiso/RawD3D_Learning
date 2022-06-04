@@ -1,5 +1,6 @@
 module;
 
+#pragma once
 #include <Windows.h>
 
 export module D3DControl;
