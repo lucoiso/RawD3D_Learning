@@ -96,15 +96,6 @@ public:
 		SetDWMAttribute(m_WindowHandle, DWMWA_USE_HOSTBACKDROPBRUSH, bEnable);
 		SetDWMAttribute(m_WindowHandle, DWMWA_USE_IMMERSIVE_DARK_MODE, bEnable);
 
-		DWM_BLURBEHIND BlurProperties
-		{
-			.dwFlags = DWM_BB_ENABLE,
-			.fEnable = false,
-			.hRgnBlur = nullptr,
-			.fTransitionOnMaximized = true
-		};
-		DwmEnableBlurBehindWindow(m_WindowHandle, &BlurProperties);
-
 		if (auto NewButton = CreateNewControl<D3DButton>(5, 5, 128, 32, L"Testing Button"))
 		{
 			NewButton->BindOnClicked([](HWND WindowHandle)
