@@ -1,10 +1,10 @@
 module;
 
 #include <Windows.h>
-#include <string>
-#include <functional>
 
 export module D3DControl;
+
+import std.core;
 
 export class D3DControl
 {

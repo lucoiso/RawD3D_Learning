@@ -3,14 +3,13 @@ module;
 #pragma once
 #include <Windows.h>
 #include <dwmapi.h>
-#include <string>
-#include <map>
-#include <memory>
 
 export module D3DWindow;
 
 import D3DControl;
 import D3DButton;
+import std.memory;
+import std.core;
 
 static std::map<int, std::unique_ptr<D3DControl>> Controls;
 

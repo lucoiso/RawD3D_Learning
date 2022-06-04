@@ -2,10 +2,11 @@ module;
 
 #pragma once
 #include <Windows.h>
-#include <string>
 
 export module D3DButton;
+
 import D3DControl;
+import std.core;
 
 export class D3DButton : public D3DControl
 {
