@@ -9,4 +9,4 @@ A simple project that i'm creating to learn DirectX while practicing Modern C++.
 1. Workload: Desktop Development with C++
 2. C++ Modules for v143 build tools
 3. MSVC v143 -  VS2022 C++ x64/x86 build tools
-4. Windows 11 SDK (10.0.22000.0) - _I'm trying some new DWM features that Microsoft are implementing to Win11_
+4. Windows 11 SDK (10.0.22621.0) - _I'm trying some new DWM features that Microsoft are implementing to Win11_
