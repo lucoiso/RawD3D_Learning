@@ -7,10 +7,9 @@ module;
 
 export module D3DWindow;
 
-import D3DControl;
-import D3DButton;
 import std.memory;
-import std.core;
+
+import D3DButton;
 
 static std::map<int, std::unique_ptr<D3DControl>> Controls;
 
@@ -96,6 +95,7 @@ public:
 		const BOOL bEnable = true;
 		SetDWMAttribute(m_WindowHandle, DWMWA_USE_HOSTBACKDROPBRUSH, bEnable);
 		SetDWMAttribute(m_WindowHandle, DWMWA_USE_IMMERSIVE_DARK_MODE, bEnable);
+		SetDWMAttribute(m_WindowHandle, DWMWA_SYSTEMBACKDROP_TYPE, DWM_SYSTEMBACKDROP_TYPE::DWMSBT_AUTO);
 
 		if (auto NewButton = CreateNewControl<D3DButton>(5, 5, 128, 32, L"Testing Button"))
 		{
@@ -144,8 +144,7 @@ public:
 
 			FillRect(_PaintStruct.hdc, &_PaintStruct.rcPaint, static_cast<HBRUSH>(GetStockObject(WHITE_BRUSH)));
 			const std::wstring _OutputText = L"Work in Progress";
-			DrawText(_PaintStruct.hdc, _OutputText.c_str(), static_cast<int>(_OutputText.length()), &_PaintStruct.rcPaint,
-				DT_CENTER);
+			DrawText(_PaintStruct.hdc, _OutputText.c_str(), static_cast<int>(_OutputText.length()), &_PaintStruct.rcPaint, DT_CENTER);
 
 			EndPaint(WindowHandle, &_PaintStruct);
 			break;

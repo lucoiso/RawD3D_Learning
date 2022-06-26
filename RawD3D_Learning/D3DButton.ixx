@@ -5,8 +5,7 @@ module;
 
 export module D3DButton;
 
-import D3DControl;
-import std.core;
+export import D3DControl;
 
 export class D3DButton : public D3DControl
 {

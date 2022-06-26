@@ -5,7 +5,7 @@ module;
 
 export module D3DControl;
 
-import std.core;
+export import std.core;
 
 export class D3DControl
 {
