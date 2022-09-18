@@ -11,33 +11,31 @@ import std.memory;
 
 import D3DButton;
 
-static std::map<int, std::unique_ptr<D3DControl>> Controls;
+static std::map<unsigned int, std::unique_ptr<D3DControl>> Controls;
 
-export class D3DWindow
+export class D3DWindow : public D3DControl
 {
 public:
-	D3DWindow() = default;
+	D3DWindow() = delete;
 
-	D3DWindow(const int Width, const int Height, const std::wstring Title, const std::wstring ClassName)
-		: m_Width(Width), m_Height(Height), m_Title(Title), m_ClassName(ClassName)
+	D3DWindow(const unsigned int& InWidth, const unsigned int& InHeight, const std::wstring& InWindowTitle)
+		: D3DControl(L"D3DWindow", nullptr, 0u, InWindowTitle, 0, 0, InWidth, InHeight, WS_OVERLAPPEDWINDOW)
 	{
 	}
 
 protected:
 	~D3DWindow() = default;
 
-private:
-	int m_Height = 800;
-	int m_Width = 800;
-	std::wstring m_Title = L"RawD3D_Learning: Window";
-	std::wstring m_ClassName = L"RawD3D_Learning: Class";
-
-	HWND m_WindowHandle = nullptr;
+	virtual bool InitializeControl() override
+	{
+		OutputDebugStringW(L"Window control doesn't use this class to initialize because we need the instance to register. Look for RegisterBaseWindowClass & CreateBaseWindow instead.");
+		return false;
+	}
 
 public:
-	virtual HRESULT RegisterBaseWindowClass(HINSTANCE WindowInstance)
+	virtual HRESULT RegisterBaseWindowClass(const HINSTANCE& InWindowInstance)
 	{
-		const HICON _hIcon = LoadIcon(WindowInstance, IDI_APPLICATION);
+		const HICON _hIcon = LoadIcon(InWindowInstance, IDI_APPLICATION);
 
 		const WNDCLASSEX _WindowClass
 		{
@@ -46,7 +44,7 @@ public:
 			.lpfnWndProc = WindowProcessing,
 			.cbClsExtra = 0,
 			.cbWndExtra = 0,
-			.hInstance = WindowInstance,
+			.hInstance = InWindowInstance,
 			.hIcon = _hIcon,
 			.hCursor = LoadCursor(nullptr, IDC_ARROW),
 			.hbrBackground = static_cast<HBRUSH>(GetStockObject(WHITE_BRUSH)),
@@ -64,12 +62,12 @@ public:
 		return 0;
 	}
 
-	virtual HRESULT CreateBaseWindow(HINSTANCE WindowInstance, int ShowCommand)
+	virtual HRESULT CreateBaseWindow(const HINSTANCE& InWindowInstance, const int& InShowCommand)
 	{
-		m_WindowHandle = CreateWindowEx(
+		m_ControlHandle = CreateWindowEx(
 			WS_EX_OVERLAPPEDWINDOW,
 			m_ClassName.c_str(),
-			m_Title.c_str(),
+			m_ControlText.c_str(),
 			WS_OVERLAPPEDWINDOW,
 			CW_USEDEFAULT,
 			CW_USEDEFAULT,
@@ -77,36 +75,60 @@ public:
 			m_Height,
 			nullptr,
 			nullptr,
-			WindowInstance,
+			InWindowInstance,
 			nullptr);
 
-		if (!m_WindowHandle)
+		if (!m_ControlHandle)
 		{
 			MessageBox(nullptr, L"Window Creation Failed!", L"RawD3D_Learning", 0);
 			return HRESULT_FROM_WIN32(GetLastError());
 		}
 
-		const auto SetDWMAttribute =
-			[](HWND& WindowHandle, const DWMWINDOWATTRIBUTE Attribute, const auto Value)
+		const auto SetDWMAttribute = [](HWND& InWindowHandle, const DWMWINDOWATTRIBUTE& InAttribute, const auto& InValue)
 		{
-			DwmSetWindowAttribute(WindowHandle, Attribute, &Value, sizeof(Value));
+			DwmSetWindowAttribute(InWindowHandle, InAttribute, &InValue, sizeof(InValue));
 		};
 
 		const BOOL bEnable = true;
-		SetDWMAttribute(m_WindowHandle, DWMWA_USE_HOSTBACKDROPBRUSH, bEnable);
-		SetDWMAttribute(m_WindowHandle, DWMWA_USE_IMMERSIVE_DARK_MODE, bEnable);
-		SetDWMAttribute(m_WindowHandle, DWMWA_SYSTEMBACKDROP_TYPE, DWM_SYSTEMBACKDROP_TYPE::DWMSBT_AUTO);
+		SetDWMAttribute(m_ControlHandle, DWMWA_USE_HOSTBACKDROPBRUSH, bEnable);
+		SetDWMAttribute(m_ControlHandle, DWMWA_USE_IMMERSIVE_DARK_MODE, bEnable);
+		SetDWMAttribute(m_ControlHandle, DWMWA_SYSTEMBACKDROP_TYPE, DWM_SYSTEMBACKDROP_TYPE::DWMSBT_AUTO);
 
-		if (auto NewButton = CreateNewControl<D3DButton>(5, 5, 128, 32, L"Testing Button"))
+		if (auto NewButton = CreateNewControl<D3DButton>(4, 4, 128, 32, L"Open dialog"))
 		{
-			NewButton->BindOnClicked([](HWND WindowHandle)
+			NewButton->BindInteraction([](const HWND& InWindowHandle)
 				{
-					MessageBox(nullptr, L"Button Clicked!", L"RawD3D_Learning", 0);
+					MessageBox(InWindowHandle, L"Button Clicked!", L"RawD3D_Learning", 0);
 				});
 		}
 
-		ShowWindow(m_WindowHandle, ShowCommand);
-		UpdateWindow(m_WindowHandle);
+		if (auto NewButton = CreateNewControl<D3DButton>(4, 36, 216, 32, L"Destroy the other button"))
+		{
+			if (Controls[1u])
+			{
+				NewButton->BindInteraction([&](const HWND& InWindowHandle)
+					{
+						if (Controls[1u] && Controls[1u]->DestroyControl())
+						{
+							MessageBox(InWindowHandle, L"Control destroyed! :)", L"RawD3D_Learning", 0);
+							Controls.erase(1u);
+
+							NewButton->SetPosition(5, 5);
+						}
+						else
+						{
+							MessageBox(InWindowHandle, L"Control already destroyed! :)", L"RawD3D_Learning", 0);
+						}
+					});
+			}
+			else
+			{
+				MessageBox(m_ControlHandle, L"Invalid control: Id 1", L"RawD3D_Learning", 0);
+			}
+		}
+
+		ShowWindow(m_ControlHandle, InShowCommand);
+		UpdateWindow(m_ControlHandle);
 
 		MSG _Message
 		{
@@ -122,48 +144,57 @@ public:
 		return static_cast<HRESULT>(_Message.wParam);
 	}
 
-	template<class ControlTy>
-		requires std::is_base_of_v<D3DControl, ControlTy>
-	ControlTy* CreateNewControl(const int PosX, const int PosY, const int Width, const int Height, const std::wstring ControlText)
+	template<class ControlTy> requires IsD3DControl<ControlTy>
+	ControlTy* CreateNewControl(const int& InPosX, const int& InPosY, const unsigned int& InWidth, const unsigned int& InHeight, const std::wstring& InControlText)
 	{
-		auto _NewControl = new ControlTy(m_WindowHandle, 1, ControlText.c_str(), PosX, PosY, Width, Height);
-		Controls.insert(std::make_pair(1, _NewControl));
+		const unsigned int _ControlID = static_cast<unsigned int>(Controls.size() + 1u);
+		auto _NewControl = new ControlTy(m_ControlHandle, _ControlID, InControlText.c_str(), InPosX, InPosY, InWidth, InHeight);
 
-		return _NewControl;
+		if (_NewControl->InitializeControl())
+		{
+			Controls.insert(std::make_pair(_ControlID, _NewControl));
+			return _NewControl;
+		}
+
+		return nullptr;
 	}
 
-	static LRESULT WindowProcessing(HWND WindowHandle, UINT Message, WPARAM Parameter, LPARAM LongParameter)
+	static LRESULT WindowProcessing(HWND InWindowHandle, UINT InMessage, WPARAM InParameter, LPARAM InLongParameter)
 	{
-		switch (Message)
+		switch (InMessage)
 		{
 		case WM_PAINT:
 		{
 			// Update renderer
+			
+			/*
 			PAINTSTRUCT _PaintStruct;
-			BeginPaint(WindowHandle, &_PaintStruct);
+			BeginPaint(InWindowHandle, &_PaintStruct);
 
 			FillRect(_PaintStruct.hdc, &_PaintStruct.rcPaint, static_cast<HBRUSH>(GetStockObject(WHITE_BRUSH)));
 			const std::wstring _OutputText = L"Work in Progress";
 			DrawText(_PaintStruct.hdc, _OutputText.c_str(), static_cast<int>(_OutputText.length()), &_PaintStruct.rcPaint, DT_CENTER);
 
-			EndPaint(WindowHandle, &_PaintStruct);
+			EndPaint(InWindowHandle, &_PaintStruct);
+			*/
+			
 			break;
 		}
 
 		case WM_COMMAND:
 		{
-			if (HIWORD(Parameter) == BN_CLICKED)
+			if (HIWORD(InParameter) == BN_CLICKED)
 			{
-				Controls[LOWORD(Parameter)]->Click(WindowHandle);
+				Controls[LOWORD(InParameter)]->InvokeInteraction(InWindowHandle);
 			}
 			break;
 		}
 
 		case WM_CLOSE:
 		{
-			if (MessageBox(WindowHandle, L"End application?", L"RawD3D_Learning", MB_OKCANCEL) == IDOK)
+			if (MessageBox(InWindowHandle, L"End application?", L"RawD3D_Learning", MB_OKCANCEL) == IDOK)
 			{
-				DestroyWindow(WindowHandle);
+				DestroyWindow(InWindowHandle);
 				return 0;
 			}
 			break;
@@ -178,6 +209,6 @@ public:
 		default: break;
 		}
 
-		return DefWindowProc(WindowHandle, Message, Parameter, LongParameter);
+		return DefWindowProc(InWindowHandle, InMessage, InParameter, InLongParameter);
 	}
 };
