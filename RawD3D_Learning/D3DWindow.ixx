@@ -107,19 +107,19 @@ public:
 			if (Controls[1u])
 			{
 				NewButton->BindInteraction([&](const HWND& InWindowHandle)
+				{
+					if (Controls[1u] && Controls[1u]->DestroyControl())
 					{
-						if (Controls[1u] && Controls[1u]->DestroyControl())
-						{
-							MessageBox(InWindowHandle, L"Control destroyed! :)", L"RawD3D_Learning", 0);
-							Controls.erase(1u);
+						MessageBox(InWindowHandle, L"Control destroyed! :)", L"RawD3D_Learning", 0);
+						Controls.erase(1u);
 
-							NewButton->SetPosition(5, 5);
-						}
-						else
-						{
-							MessageBox(InWindowHandle, L"Control already destroyed! :)", L"RawD3D_Learning", 0);
-						}
-					});
+						NewButton->SetPosition(5, 5);
+					}
+					else
+					{
+						MessageBox(InWindowHandle, L"Control already destroyed! :)", L"RawD3D_Learning", 0);
+					}
+				});
 			}
 			else
 			{
@@ -163,39 +163,39 @@ public:
 	{
 		switch (InMessage)
 		{
-		case WM_PAINT:
-		{
-			// Update renderer
+			case WM_PAINT:
+			{
+				// Update renderer
 			
-			break;
-		}
-
-		case WM_COMMAND:
-		{
-			if (HIWORD(InParameter) == BN_CLICKED)
-			{
-				Controls[LOWORD(InParameter)]->InvokeInteraction(InWindowHandle);
+				break;
 			}
-			break;
-		}
 
-		case WM_CLOSE:
-		{
-			if (MessageBox(InWindowHandle, L"End application?", L"RawD3D_Learning", MB_OKCANCEL) == IDOK)
+			case WM_COMMAND:
 			{
-				DestroyWindow(InWindowHandle);
-				return 0;
+				if (HIWORD(InParameter) == BN_CLICKED)
+				{
+					Controls[LOWORD(InParameter)]->InvokeInteraction(InWindowHandle);
+				}
+				break;
 			}
-			break;
-		}
 
-		case WM_DESTROY:
-		{
-			PostQuitMessage(0);
-			break;
-		}
+			case WM_CLOSE:
+			{
+				if (MessageBox(InWindowHandle, L"End application?", L"RawD3D_Learning", MB_OKCANCEL) == IDOK)
+				{
+					DestroyWindow(InWindowHandle);
+					return 0;
+				}
+				break;
+			}
 
-		default: break;
+			case WM_DESTROY:
+			{
+				PostQuitMessage(0);
+				break;
+			}
+
+			default: break;
 		}
 
 		return DefWindowProc(InWindowHandle, InMessage, InParameter, InLongParameter);

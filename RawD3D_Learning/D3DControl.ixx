@@ -12,14 +12,16 @@ export class D3DControl
 public:
 	D3DControl() = delete;
 
-	D3DControl(const std::wstring& InClassName, const HWND& InParentWindow, const unsigned int& InId) : m_ClassName(InClassName), m_Parent(InParentWindow), m_ControlId(InId)
+	D3DControl(const std::wstring& InClassName, const HWND& InParentWindow, const unsigned int& InId) 
+		: m_ClassName(InClassName), m_Parent(InParentWindow), m_ControlId(InId)
 	{
 		std::wstringstream OutDbg;
 		OutDbg << L"Constructing control with id " << m_ControlId << std::endl;
 		OutputDebugStringW(OutDbg.str().c_str());
 	};
 
-	D3DControl(const std::wstring& InClassName, const HWND& InParentWindow, const unsigned int& InId, const std::wstring& InControlText, const int& InPosX, const int& InPosY, const unsigned int& InWidth, const unsigned int& InHeight, const DWORD& InStyle) : m_ClassName(InClassName), m_Parent(InParentWindow), m_ControlId(InId), m_ControlText(InControlText), m_PosX(InPosX), m_PosY(InPosY), m_Width(InWidth), m_Height(InHeight), m_Style(InStyle | WS_VISIBLE | WS_CHILD)
+	D3DControl(const std::wstring& InClassName, const HWND& InParentWindow, const unsigned int& InId, const std::wstring& InControlText, const int& InPosX, const int& InPosY, const unsigned int& InWidth, const unsigned int& InHeight, const DWORD& InStyle) 
+		: m_ClassName(InClassName), m_Parent(InParentWindow), m_ControlId(InId), m_ControlText(InControlText), m_PosX(InPosX), m_PosY(InPosY), m_Width(InWidth), m_Height(InHeight), m_Style(InStyle | WS_VISIBLE | WS_CHILD)
 	{
 		std::wstringstream OutDbg;
 		OutDbg << L"Constructing control with id " << m_ControlId << std::endl;
