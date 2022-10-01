@@ -14,35 +14,35 @@ public:
 
 	D3DControl(const std::wstring& InClassName, const HWND& InParentWindow, const unsigned int& InId) : m_ClassName(InClassName), m_Parent(InParentWindow), m_ControlId(InId)
 	{
-		std::wstringstream _OutDbg;
-		_OutDbg << L"Constructing control with id " << m_ControlId << std::endl;
-		OutputDebugStringW(_OutDbg.str().c_str());
+		std::wstringstream OutDbg;
+		OutDbg << L"Constructing control with id " << m_ControlId << std::endl;
+		OutputDebugStringW(OutDbg.str().c_str());
 	};
 
 	D3DControl(const std::wstring& InClassName, const HWND& InParentWindow, const unsigned int& InId, const std::wstring& InControlText, const int& InPosX, const int& InPosY, const unsigned int& InWidth, const unsigned int& InHeight, const DWORD& InStyle) : m_ClassName(InClassName), m_Parent(InParentWindow), m_ControlId(InId), m_ControlText(InControlText), m_PosX(InPosX), m_PosY(InPosY), m_Width(InWidth), m_Height(InHeight), m_Style(InStyle | WS_VISIBLE | WS_CHILD)
 	{
-		std::wstringstream _OutDbg;
-		_OutDbg << L"Constructing control with id " << m_ControlId << std::endl;
-		OutputDebugStringW(_OutDbg.str().c_str());
+		std::wstringstream OutDbg;
+		OutDbg << L"Constructing control with id " << m_ControlId << std::endl;
+		OutputDebugStringW(OutDbg.str().c_str());
 	}
 
 	~D3DControl()
 	{
-		std::wstringstream _OutDbg;
-		_OutDbg << L"Destructing control with id " << m_ControlId << std::endl;
-		OutputDebugStringW(_OutDbg.str().c_str());
+		std::wstringstream OutDbg;
+		OutDbg << L"Destructing control with id " << m_ControlId << std::endl;
+		OutputDebugStringW(OutDbg.str().c_str());
 	}
 
 	bool DestroyControl()
 	{
-		const bool _Output = DestroyWindow(m_ControlHandle);
+		const bool Output = DestroyWindow(m_ControlHandle);
 		
-		if (_Output)
+		if (Output)
 		{
 			this->~D3DControl();
 		}
 		
-		return _Output;
+		return Output;
 	}
 	
 	const unsigned int GetControlId() const
@@ -74,9 +74,9 @@ public:
 	
 	void SetControlText(const std::wstring& InText)
 	{
-		const BOOL _Result = SetWindowTextW(m_ControlHandle, InText.c_str());
+		const BOOL Result = SetWindowTextW(m_ControlHandle, InText.c_str());
 		
-		if (_Result)
+		if (Result)
 		{
 			m_ControlText = InText;
 		}
@@ -84,9 +84,9 @@ public:
 
 	void SetPosition(const int& InPosX, const int& InPosY)
 	{
-		const BOOL _Result = MoveWindow(m_ControlHandle, InPosX, InPosY, m_Width, m_Height, true);
+		const BOOL Result = MoveWindow(m_ControlHandle, InPosX, InPosY, m_Width, m_Height, true);
 
-		if (_Result)
+		if (Result)
 		{
 			m_PosX = InPosX;
 			m_PosY = InPosY;
@@ -105,9 +105,9 @@ public:
 		const int New_PosX = InPosX + ControlInfo.rcClient.left;
 		const int New_PosY = InPosY + ControlInfo.rcClient.top;
 
-		const BOOL _Result = MoveWindow(m_ControlHandle, New_PosX, New_PosY, m_Width, m_Height, true);
+		const BOOL Result = MoveWindow(m_ControlHandle, New_PosX, New_PosY, m_Width, m_Height, true);
 
-		if (_Result)
+		if (Result)
 		{
 			m_PosX = New_PosX;
 			m_PosY = New_PosY;
@@ -118,9 +118,9 @@ public:
 
 	void SetSize(const unsigned int& InWidth, const unsigned int& InHeight)
 	{
-		const BOOL _Result = MoveWindow(m_ControlHandle, m_PosX, m_PosY, InWidth, InHeight, true);
+		const BOOL Result = MoveWindow(m_ControlHandle, m_PosX, m_PosY, InWidth, InHeight, true);
 
-		if (_Result)
+		if (Result)
 		{
 			m_Width = InWidth;
 			m_Height = InHeight;
@@ -152,9 +152,9 @@ public:
 
 		if (!m_ControlHandle)
 		{
-			std::wstringstream _OutDbg;
-			_OutDbg << L"Failed to create control with id " << m_ControlId << ". Error: " << GetLastError() << std::endl;
-			OutputDebugStringW(_OutDbg.str().c_str());
+			std::wstringstream OutDbg;
+			OutDbg << L"Failed to create control with id " << m_ControlId << ". Error: " << GetLastError() << std::endl;
+			OutputDebugStringW(OutDbg.str().c_str());
 
 			this->~D3DControl();
 

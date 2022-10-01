@@ -35,9 +35,9 @@ protected:
 public:
 	virtual HRESULT RegisterBaseWindowClass(const HINSTANCE& InWindowInstance)
 	{
-		const HICON _hIcon = LoadIcon(InWindowInstance, IDI_APPLICATION);
+		const HICON hIcon = LoadIcon(InWindowInstance, IDI_APPLICATION);
 
-		const WNDCLASSEX _WindowClass
+		const WNDCLASSEX WindowClass
 		{
 			.cbSize = sizeof(WNDCLASSEX),
 			.style = CS_DBLCLKS,
@@ -45,15 +45,15 @@ public:
 			.cbClsExtra = 0,
 			.cbWndExtra = 0,
 			.hInstance = InWindowInstance,
-			.hIcon = _hIcon,
+			.hIcon = hIcon,
 			.hCursor = LoadCursor(nullptr, IDC_ARROW),
 			.hbrBackground = static_cast<HBRUSH>(GetStockObject(WHITE_BRUSH)),
 			.lpszMenuName = nullptr,
 			.lpszClassName = m_ClassName.c_str(),
-			.hIconSm = _hIcon
+			.hIconSm = hIcon
 		};
 
-		if (!RegisterClassEx(&_WindowClass))
+		if (!RegisterClassEx(&WindowClass))
 		{
 			MessageBox(nullptr, L"Class Registration Failed!", L"RawD3D_Learning", 0);
 			return HRESULT_FROM_WIN32(GetLastError());
@@ -130,30 +130,30 @@ public:
 		ShowWindow(m_ControlHandle, InShowCommand);
 		UpdateWindow(m_ControlHandle);
 
-		MSG _Message
+		MSG Message
 		{
 			.message = WM_NULL
 		};
 
-		while (GetMessage(&_Message, nullptr, 0, 0))
+		while (GetMessage(&Message, nullptr, 0, 0))
 		{
-			TranslateMessage(&_Message);
-			DispatchMessage(&_Message);
+			TranslateMessage(&Message);
+			DispatchMessage(&Message);
 		}
 
-		return static_cast<HRESULT>(_Message.wParam);
+		return static_cast<HRESULT>(Message.wParam);
 	}
 
 	template<class ControlTy> requires IsD3DControl<ControlTy>
-	ControlTy* CreateNewControl(const int& InPosX, const int& InPosY, const unsigned int& InWidth, const unsigned int& InHeight, const std::wstring& InControlText)
+	constexpr ControlTy* CreateNewControl(const int& InPosX, const int& InPosY, const unsigned int& InWidth, const unsigned int& InHeight, const std::wstring& InControlText)
 	{
-		const unsigned int _ControlID = static_cast<unsigned int>(Controls.size() + 1u);
-		auto _NewControl = new ControlTy(m_ControlHandle, _ControlID, InControlText.c_str(), InPosX, InPosY, InWidth, InHeight);
+		const unsigned int ControlID = static_cast<unsigned int>(Controls.size() + 1u);
+		auto NewControl = new ControlTy(m_ControlHandle, ControlID, InControlText.c_str(), InPosX, InPosY, InWidth, InHeight);
 
-		if (_NewControl->InitializeControl())
+		if (NewControl->InitializeControl())
 		{
-			Controls.insert(std::make_pair(_ControlID, _NewControl));
-			return _NewControl;
+			Controls.insert(std::make_pair(ControlID, NewControl));
+			return NewControl;
 		}
 
 		return nullptr;
@@ -166,17 +166,6 @@ public:
 		case WM_PAINT:
 		{
 			// Update renderer
-			
-			/*
-			PAINTSTRUCT _PaintStruct;
-			BeginPaint(InWindowHandle, &_PaintStruct);
-
-			FillRect(_PaintStruct.hdc, &_PaintStruct.rcPaint, static_cast<HBRUSH>(GetStockObject(WHITE_BRUSH)));
-			const std::wstring _OutputText = L"Work in Progress";
-			DrawText(_PaintStruct.hdc, _OutputText.c_str(), static_cast<int>(_OutputText.length()), &_PaintStruct.rcPaint, DT_CENTER);
-
-			EndPaint(InWindowHandle, &_PaintStruct);
-			*/
 			
 			break;
 		}
